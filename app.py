@@ -13,9 +13,6 @@ if "input" not in st.session_state:
 if "start" not in st.session_state:
     st.session_state.start = False
 
-if "run" not in st.session_state:
-    st.session_state.run = False
-
 def check_options(option):
     if option is None:
         st.session_state.start = False

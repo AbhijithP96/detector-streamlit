@@ -19,10 +19,10 @@ class Detector(VideoProcessorBase):
         self.ort_session = onnxruntime.InferenceSession(onnx_model, providers=EP_list)
 
     def recv(self, frame):
-        frame = frame.to_ndarray(format='bgr8')
+        frame = frame.to_ndarray(format='bgr24')
         #frame = self.detector(frame)
 
-        return av.VideoFrame.from_ndarray(format='bgr8')
+        return av.VideoFrame.from_ndarray(format='bgr24')
 
     def detector(self, img: np.ndarray):
 
