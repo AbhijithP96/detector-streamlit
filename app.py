@@ -70,5 +70,6 @@ if st.session_state.start:
             webrtc_streamer(
                 key='detectLive',
                 video_processor_factory=Detector,
-                media_stream_constraints={"video": True, "audio": False}
+                media_stream_constraints={"video": True, "audio": False},
+                async_processing=True
             )
