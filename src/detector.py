@@ -15,7 +15,7 @@ class Detector:
         opt_session.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL
 
         EP_list = ['CPUExecutionProvider']
-        self.ort_session = onnxruntime.InferenceSession(onnx_model, providers=EP_list)
+        self.ort_session = onnxruntime.InferenceSession(onnx_model, providers=EP_list, sess_options=opt_session)
 
         self.frame_count = 0
         
