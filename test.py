@@ -1,21 +1,14 @@
-import cv2
+import gradio as gr
 
-cap = cv2.VideoCapture(0)
-writer = cv2.VideoWriter('head.avi', cv2.VideoWriter.fourcc(*'XVID'), fps=30, frameSize=(640,480), isColor=True)
+def do_something(image):
+    print(image.shape)
+    yield image
 
-while True:
-
-    ret, frame = cap.read()
-
-    if not ret:
-        break
-
-    writer.write(frame)
-
-    cv2.imshow('frame', frame)
+with gr.Blocks(title='Testing Live') as test:
     
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-writer.release()
+    cam = gr.Image(type='numpy', sources=['webcam'], streaming=True)
+    out = gr.Image(label='Something', streaming=True)
+    
+    cam.stream(do_something, inputs=[cam], outputs=[out])    
+    
+test.launch()

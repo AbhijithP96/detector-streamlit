@@ -1,8 +1,6 @@
 import onnxruntime
 import numpy as np
 import os
-from streamlit_webrtc import VideoProcessorBase
-import av
 from src.utils import preprocess_image, nms, xywh2xyxy, draw_box, post_process
 
 class Detector:
@@ -14,7 +12,7 @@ class Detector:
         opt_session.enable_cpu_mem_arena = False
         opt_session.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL
 
-        EP_list = ['CPUExecutionProvider']
+        EP_list = ['CPUExecutionProvider', 'CUDAExecutionProvider']
         self.ort_session = onnxruntime.InferenceSession(onnx_model, providers=EP_list, sess_options=opt_session)
 
         self.frame_count = 0
