@@ -73,3 +73,7 @@ def draw_box(image, bbox, cls, score, color):
 
     return image
 
+def post_process(image, h, w):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    return cv2.resize(image, (w,h), interpolation=cv2.INTER_LINEAR)
+

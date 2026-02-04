@@ -3,11 +3,10 @@ import numpy as np
 import os
 from streamlit_webrtc import VideoProcessorBase
 import av
-from src.utils import preprocess_image, nms, xywh2xyxy, draw_box
+from src.utils import preprocess_image, nms, xywh2xyxy, draw_box, post_process
 
-class Detector(VideoProcessorBase):
+class Detector:
     def __init__(self):
-        super().__init__()
         onnx_model = os.path.join(os.getcwd(), 'weights', 'best.onnx')
 
         opt_session = onnxruntime.SessionOptions()
@@ -19,14 +18,7 @@ class Detector(VideoProcessorBase):
         self.ort_session = onnxruntime.InferenceSession(onnx_model, providers=EP_list)
 
         self.frame_count = 0
-
-    def recv(self, frame):
-        self.frame_count += 1
-        if self.frame_count%10==0:
-            frame = frame.to_ndarray(format='bgr24')
-            #frame = self.detector(frame)
-
-            return av.VideoFrame.from_ndarray(format='bgr24')
+        
 
     def detector(self, img: np.ndarray):
 
@@ -62,14 +54,14 @@ class Detector(VideoProcessorBase):
         boxes *= np.array([image_width, image_height, image_width, image_height])
         boxes = boxes.astype(np.int32)
 
+        if len(boxes) > 0:
+            indices = nms(boxes, scores, 0.0)
 
-        indices = nms(boxes, scores, 0.0)
-
-        for (bbox, score, label) in zip(xywh2xyxy(boxes[indices]), scores[indices], class_ids[indices]):
-            bbox = bbox.round().astype(np.int32).tolist()
-            cls_id = int(label)
-            cls = 'head' if cls_id == 0 else 'Unknown'
-            color = (0,255,0)
-            image_draw = draw_box(image_draw, bbox, cls, score, color)
+            for (bbox, score, label) in zip(xywh2xyxy(boxes[indices]), scores[indices], class_ids[indices]):
+                bbox = bbox.round().astype(np.int32).tolist()
+                cls_id = int(label)
+                cls = 'head' if cls_id == 0 else 'Unknown'
+                color = (0,255,0)
+                image_draw = draw_box(image_draw, bbox, cls, score, color)
             
-        return image_draw
+        return post_process(image_draw, image_height, image_width)
