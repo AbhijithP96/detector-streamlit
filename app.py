@@ -109,15 +109,18 @@ if st.session_state.start:
 
             while True:
                 ret, frame = cap.read()
+                detector.frame_count+=1
 
                 if not ret:
                     break
-
-                frame_detect = detector.detector(frame)
+                
+                if detector.frame_count%10==0:
+                    frame_detect = detector.detector(frame)
+                    frame_window_detect.image(frame_detect)
 
                 frame_window_orig.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                frame_window_detect.image(frame_detect)
-
+                
+            detector.frame_count = 0
             cap.release()
 
     if 'image' in st.session_state.input.keys():
